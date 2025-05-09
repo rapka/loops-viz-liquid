@@ -1,0 +1,118 @@
+@font-face {
+    font-family: 'Montreal';
+    src: url('../public/digital-dream.ttf') format('truetype');
+}
+
+
+.artist, .title, .mins, .fury {
+  position: absolute;
+/*  writing-mode: vertical-lr;*/
+  text-orientation: upright;
+  font-family: 'Montreal';
+  font-size: 70px;
+  color: #FFF;
+}
+
+.mins {
+  top: 42px;
+  left: 527px;
+  width: 900px;
+  text-align: start;
+}
+
+
+.title {
+  bottom: 40px;
+  left: 531px;
+  text-align: start;
+  width: 858px;
+}
+
+
+.text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: absolute;
+  font-size: 15rem;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+
+/*  mix-blend-mode: overlay;*/
+}
+
+/*
+ .album, .title {
+  font-family: 'Montreal';
+  line-height: 0.8;
+  font-weight: bold;
+  position: absolute;
+  letter-spacing: 30px;
+  word-spacing: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}/*
+
+.artist {
+  bottom: 1020px;
+  font-size: 16rem;
+  animation-name: slideHoriz !important;
+  animation-delay: -40s;
+  letter-spacing: 80px;
+  animation-duration: 90s;
+}*/
+
+.album {
+  bottom: 0;
+  left: 325px;
+  font-size: 13rem;
+  animation-name: slideHoriz !important;
+  animation-delay: -40s;
+  letter-spacing: 76px;
+  animation-duration: 45s;
+}
+
+/*.title {
+  font-size: 16rem;
+  bottom: 600px;
+  text-align: right;
+  letter-spacing: 60px;
+  animation-name: slideHoriz !important;
+  animation-delay: -10s;
+  animation-duration: 60s;
+}*/
+
+.album, .artist, .title, .album2, .title2, .artist2 {
+/*  animation-direction: normal;*/
+}
+
+.album, .artist, .title, .album2, .artist2, .title2, .title4 {
+/*  animation-direction: reverse !important;*/
+}
+
+.artist1, .album2, .album1, .title3, .artist3 {
+/*  animation-direction: normal !important;*/
+}
+
+.fury {
+  width: 100%;
+  text-align: center;
+  font-size: 256px;
+  line-height: 256px;
+  transform: translate(30px, 414px);
+}
+
+@keyframes slideHoriz {
+  0% {
+    transform: translateX(3840px);
+  }
+
+  100% {
+    transform: translateX(-3840px);
+  }
+}
