@@ -62,7 +62,7 @@ function Background(props) {
 
   return (
     <div className="bg-container" id="bg" style={bgContainerStyles}>
-      <FilmGrain />
+      {/*<FilmGrain />*/}
     </div>
   );
 }

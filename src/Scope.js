@@ -20,7 +20,7 @@ var vec2 = require('./js/src/gl-matrix').vec2;
 var ComputeKernel = require('./js/src/compute').Kernel;
 
 
-let WIDTH = 1920 / 2;
+let WIDTH = 1920;
 let HEIGHT = 1080;
 
 console.log('requiring');
@@ -31,9 +31,6 @@ var renderBlood = true;
 
 var intervalID;
 window.audioBufferSouceNode = null;
-var offset = 0;
-var startTime = 0;
-var paused = false;
 var tickCounter = 0;
 
 var playing = false;
@@ -61,12 +58,6 @@ function onMouseUpdate(e) {
 document.addEventListener('mousemove', onMouseUpdate, false);
 document.addEventListener('mouseenter', onMouseUpdate, false);
 
-
-function fail(el, msg, id) {
-  document.getElementById('video').style.display = 'block';
-}
-
-
 var resetBlood = function () {
   bloodHeight = 50;
   bloodWidth = 50;
@@ -92,8 +83,6 @@ class Scope extends React.Component {
 
     this.shaders = null;
     this.clock = null;
-
-    this._prepareAPI();
   }
 
   setup(width, height, singleComponentFboFormat) {
@@ -316,7 +305,6 @@ class Scope extends React.Component {
         // bloodWidth = (rect.width / 2) + (Math.random()*1000 - 500);
         // bloodHeight = (rect.height / 2) + (Math.random()*600 - 300);
         if (player.paused) {
-          console.log('mosss');
           bloodWidth = mouseX;
           bloodHeight = mouseY;
         }
@@ -378,85 +366,16 @@ class Scope extends React.Component {
     };
   }
 
-  _prepareAPI() {
-    //fix browser vender for AudioContext and requestAnimationFrame
-    window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext;
-    window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame;
-    window.cancelAnimationFrame = window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.msCancelAnimationFrame;
-    try {
-      this.audioContext = new AudioContext();
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  _visualize(audioContext, buffer, offset) {
-    window.audioBufferSouceNode = audioContext.createBufferSource();
-    var analyser = audioContext.createAnalyser();
-    var that = this;
-    //connect the source to the analyser
-    window.audioBufferSouceNode.connect(analyser);
-    //connect the analyser to the destination(the speaker), or we won't hear the sound
-    analyser.connect(audioContext.destination);
-    //then assign the buffer to the buffer source node
-    // if (buffer == null) {
-    //   window.audioBufferSouceNode.stop();
-    //   return;
-    // }
-
-    window.audioBufferSouceNode.buffer = buffer;
-    //play the source
-    if (!window.audioBufferSouceNode.start) {
-      window.audioBufferSouceNode.start = window.audioBufferSouceNode.noteOn //in old browsers use noteOn method
-      window.audioBufferSouceNode.stop = window.audioBufferSouceNode.noteOff //in old browsers use noteOn method
-    };
-    //stop the previous sound if any
-    if (this.animationId !== null) {
-      cancelAnimationFrame(this.animationId);
-    }
-    if (this.source !== null) {
-      this.source.stop(0);
-    }
-    window.audioBufferSouceNode.start(0, offset);
-    this.status = 1;
-    this.source = window.audioBufferSouceNode;
-    window.audioBufferSouceNode.onended = function() {
-      offset = 0;
-
-      startTime = 0;
-      playing = false;
-
-    };
-  }
-
-  _audioEnd(instance) {
-    resetBlood();
-    if (this.forceStop) {
-      this.forceStop = false;
-      this.status = 1;
-      return;
-    };
-    this.status = 0;
-  }
-
   hasFloatLuminanceFBOSupport(){
     var fbo = new FBO(window.gl, 32, 32, window.gl.FLOAT, window.gl.LUMINANCE);
     return fbo.supported;
   }
 
   componentDidUpdate(prevProps) {
-    HEIGHT = window.innerHeight;
-    WIDTH = window.innerWidth;
     if (!prevProps.playing && this.props.playing) {
       this.audioCtx.resume().then(() => {
         this.player.current.play();
       });
-
-      var that = this;
-      console.log('didu', window.audioBufferSouceNode.buffer);
-
-      const duration = window.audioBufferSouceNode.buffer ? window.audioBufferSouceNode.buffer.duration : 10;
-      // that._visualize(that.audioContext, window.audioBufferSouceNode.buffer, (offset / 1000) % duration);
     }
   }
 
@@ -472,9 +391,8 @@ class Scope extends React.Component {
       extensions: {
         texture_float: true
       }
-    }, fail);
+    });
     window.gl = gl;
-
 
     this.clock = new Clock(canvas);
     var input = new InputHandler(canvas);
@@ -496,27 +414,26 @@ class Scope extends React.Component {
     // just load it when it's there. If it's not there it's hopefully not needed.
     gl.getExtension('OES_texture_float_linear');
     var format = this.hasFloatLuminanceFBOSupport() ? gl.LUMINANCE : gl.RGBA;
+
     var onresize = () => {
-        var rect = canvas.getBoundingClientRect(),
-          width = rect.width * options.resolution,
-          height = rect.height * options.resolution;
-        //console.log(rect.width, rect.height);
-        //if(rect.width != canvas.width || rect.height != canvas.height){
+        // var rect = canvas.getBoundingClientRect(),
+        //   width = rect.width * options.resolution,
+        //   height = rect.height * options.resolution;
+        // console.log('mmmm', rect.width, rect.height);
+        // if(rect.width != canvas.width || rect.height != canvas.height){
           input.updateOffset();
           window.clearInterval(intervalID);
-          this.setup(width, height, format);
+          // this.setup(width, height, format);
+          this.setup(WIDTH, HEIGHT, format);
         //}
       };
 
       window.addEventListener('resize', debounce(onresize, 250));
-
       onresize();
+
       this.clock.start();
     });
 
-
-    HEIGHT = window.innerHeight;
-    WIDTH = window.innerWidth;
     const audioElement = this.player.current;
     let audioCtx = this.audioCtx;
     const videoFilter = config.video.filter;
@@ -552,10 +469,7 @@ class Scope extends React.Component {
     const playing = this.props.playing;
     const player = this.player.current;
     const draw = () => {
-      console.log('dm', playing, player.paused, kickValue);
-
-      HEIGHT = window.innerHeight;
-      WIDTH = window.innerWidth;
+      // console.log('dm', playing, player.paused, kickValue);
 
       // canvasCtx.canvas.width = WIDTH;
       // canvasCtx.canvas.height = HEIGHT;
@@ -594,25 +508,19 @@ class Scope extends React.Component {
       blurValue = bassValue / 256;
       let filterString = `${videoFilter} blur(${blurValue}px)`;
 
-      var rect = this.canvas.current.getBoundingClientRect();
+      // var rect = this.canvas.current.getBoundingClientRect();
       if (!player.paused) {
-        console.log('innn', bloodWidth);
-        bloodWidth = (rect.width / 2) - 300 + kickValue + bassValue;
-        bloodHeight = (rect.height / 2) - 125 + 1.3 * midValue - highValue;
+        // console.log('innn', bloodWidth, rect.width, rect.height);
+        // bloodWidth = (rect.width / 2) - 300 + kickValue + bassValue;
+        bloodWidth = (WIDTH / 2) - 300 + kickValue + bassValue;
+        bloodHeight = (HEIGHT / 2) - 125 + 1.3 * midValue - highValue;
         bloodPower = Math.max((bassValue / 11), 3);
         bloodCursor = bloodPower * 1.8 + 20;
         options.mouse_force = bloodPower;
       }
 
-      // videoCtx0.style.transform = `scale(${1 + bassValue * 0.0002})`;
-      // videoCtx0.style.filter = filterString;
       // console.log('greyscale', greyscale, midValue, highValue);
-      // videoCtx.style.filter = `grayscale(${Math.max(70 - bassValue * 0.15, 0)}%)`;
       // slideCtx.filter = `blur(200px)`;
-
-      // canvasCtx.fillStyle = 'rgba(200, 200, 200, 0)';
-      // canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
-      // canvasCtx.lineWidth = Math.max(bassValue / 100, 2);
     };
 
     draw();
@@ -621,7 +529,7 @@ class Scope extends React.Component {
   render() {
     return (
       <div className="viz">
-        <div id="cc"><canvas ref={this.canvas} id="c" width="1280" height="720" /></div>
+        <div id="cc"><canvas ref={this.canvas} id="canvas" width={WIDTH} height={HEIGHT} /></div>
         <audio
           ref={this.player}
           src={this.props.audioSrc}
@@ -629,7 +537,7 @@ class Scope extends React.Component {
           preload="auto"
           id="audioPlayer"
         />
-        <div id="cover-container"></div>
+        <div id="cover-container" className="label-logo"><img className="logo-image" src="img/logo.png" /></div>
       </div>
     );
   }
@@ -637,13 +545,11 @@ class Scope extends React.Component {
 
 Scope.propTypes = {
   rotationOffset: PropTypes.number, // hue offset between different scopes (in degrees)
-  colors: PropTypes.arrayOf(PropTypes.string), // static color for each scope
   audioSrc: PropTypes.string.isRequired,
 };
 
 Scope.defaultProps = {
   rotationOffset: 0,
-  colors: ['#FFFFFF', '#FFFFFF'],
 }
 
 export default Scope;
