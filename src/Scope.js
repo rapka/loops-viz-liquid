@@ -53,13 +53,9 @@ var mouseX = null;
 var mouseY = null;
 
 
-
-
-
 function onMouseUpdate(e) {
   mouseX = e.pageX;
   mouseY = e.pageY;
-  // console.log(mouseX, mouseY);
 }
 
 document.addEventListener('mousemove', onMouseUpdate, false);
@@ -78,17 +74,6 @@ var resetBlood = function () {
   bloodCursor = 120;
 }
 
-var Visualizer = function() {
-  this.audioContext = null;
-  this.source = null; //the audio source
-  this.infoUpdateId = null; //to store the setTimeout ID and clear the interval
-  this.animationId = null;
-  this.status = 0; //flag for sound is playing 1 or stopped 0
-  this.forceStop = false;
-  this.allCapsReachBottom = false;
-};
-
-
 
 class Scope extends React.Component {
   constructor(props) {
@@ -98,24 +83,17 @@ class Scope extends React.Component {
     this.canvas = React.createRef();
     this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-
-    console.log('onload!!!');
-
     this.audioContext = null;
     this.source = null; //the audio source
     this.infoUpdateId = null; //to store the setTimeout ID and clear the interval
     this.animationId = null;
     this.status = 0; //flag for sound is playing 1 or stopped 0
     this.forceStop = false;
-    this.allCapsReachBottom = false;
 
     this.shaders = null;
     this.clock = null;
 
     this._prepareAPI();
-    this._addEventListner();
-
-    // new Visualizer().ini();
   }
 
   setup(width, height, singleComponentFboFormat) {
@@ -412,37 +390,6 @@ class Scope extends React.Component {
     }
   }
 
-  _addEventListner() {
-    var that = this;
-
-    var listenButton = document.getElementById('listen-button');
-    listenButton.addEventListener("click", function() {
-      var loaded = false;
-
-      if (playing){
-        window.audioBufferSouceNode.stop();
-        offset = Date.now() - startTime;
-        paused = true;
-        playing = true;
-      }
-      else if (!playing && offset == 0) {
-        listenButton.innerHTML = 'Pause';
-        offset = 0;
-        startTime = Date.now();
-        that._visualize(that.audioContext, window.audioBufferSouceNode.buffer, offset, listenButton);
-        paused = false;
-        playing = true;
-      }
-      else {
-        startTime = Date.now() - offset;
-        that._visualize(that.audioContext, window.audioBufferSouceNode.buffer, (offset / 1000) % window.audioBufferSouceNode.buffer.duration);
-        paused = false;
-        playing = true;
-      }
-
-    }, false);
-  }
-
   _visualize(audioContext, buffer, offset) {
     window.audioBufferSouceNode = audioContext.createBufferSource();
     var analyser = audioContext.createAnalyser();
@@ -480,73 +427,6 @@ class Scope extends React.Component {
       playing = false;
 
     };
-
-    this._drawSpectrum(analyser);
-  }
-
-  _drawSpectrum(analyser) {
-    var that = this,
-      canvas = document.getElementById('c'),
-      capYPositionArray = []; ////store the vertical position of hte caps for the preivous frame
-    //ctx = canvas.getContext('2d'),
-    if (!renderBlood) {
-      return;
-    }
-
-    // const playing = this.props.playing;
-    // var drawMeter = function() {
-    //   console.log('dam', playing);
-
-    //   analyser.maxDecibels = -10;
-    //   var array = new Uint8Array(analyser.frequencyBinCount);
-    //   analyser.getByteFrequencyData(array);
-    //   if (that.status === 0) {
-    //     //fix when some sounds end the value still not back to zero
-    //     for (let i = array.length - 1; i >= 0; i--) {
-    //       array[i] = 0;
-    //     };
-    //     this.allCapsReachBottom = true;
-    //     for (let i = capYPositionArray.length - 1; i >= 0; i--) {
-    //       this.allCapsReachBottom = this.allCapsReachBottom && (capYPositionArray[i] === 0);
-    //     };
-    //     if (this.allCapsReachBottom) {
-    //       cancelAnimationFrame(that.animationId); //since the sound is top and animation finished, stop the requestAnimation to prevent potential memory leak,THIS IS VERY IMPORTANT!
-    //       return;
-    //     };
-    //   };
-
-
-    //   var bassValue = (array[0] + array[1] + array[2] + array[3]) / 4;
-    //   var kickValue = (array[3] + array[4] + array[5] + array[6] + array[7] ) / 5;
-    //   var midSum = 0;
-    //   var highSum = 0;
-    //   for (let i = 25; i < 325; i++) {
-    //       midSum += array[i];
-    //   };
-
-    //    for (let i = 500; i < 1000; i++) {
-    //       highSum += array[i];
-    //   };
-    //   var highValue = (highSum / 500) * 5;
-    //   var midValue = (midSum / 300) * 1.5;
-
-    //   //Transform sub value
-    //   bassValue = Math.max(0, 10 * (Math.exp(bassValue * 0.02) - 2));
-    //   kickValue = Math.max(0, 10 * (Math.exp((kickValue + 10) * 0.02) - 2));
-
-
-    //   var rect = canvas.getBoundingClientRect();
-    //   if (playing && !paused) {
-    //     console.log('dm', playing, kickValue, bloodWidth);
-    //     bloodWidth = (rect.width / 2) - 300 + kickValue + bassValue;
-    //     bloodHeight = (rect.height / 2) - 125 + 1.3 * midValue - highValue;
-    //     bloodPower = Math.max((bassValue / 11), 3);
-    //     bloodCursor = bloodPower * 1.8 + 20;
-    //     options.mouse_force = bloodPower;
-    //   }
-    //   that.animationId = requestAnimationFrame(drawMeter);
-    // }
-    // this.animationId = requestAnimationFrame(drawMeter);
   }
 
   _audioEnd(instance) {
@@ -577,12 +457,7 @@ class Scope extends React.Component {
 
       const duration = window.audioBufferSouceNode.buffer ? window.audioBufferSouceNode.buffer.duration : 10;
       // that._visualize(that.audioContext, window.audioBufferSouceNode.buffer, (offset / 1000) % duration);
-
     }
-
-    // if (!prevProps.videoPlaying && this.props.videoPlaying) {
-    //   this.video0.current.play();
-    // }
   }
 
   componentDidMount() {
@@ -649,17 +524,12 @@ class Scope extends React.Component {
     var analyser = audioCtx.createAnalyser();
 
     console.log('aaa', this.canvas.current, this.canvas.current.getContext('2d'), this.player.current);
-    // console.log('bbb', this.canvas.current.getContextAttributes());
-
-    // const canvasCtx = this.canvas.current.getContext('2d');
-
 
     const videoCtx0 = document.getElementById('video0');
 
     let source = audioCtx.createMediaElementSource(audioElement);
 
    window.audioBufferSouceNode = audioCtx.createBufferSource();
-    // window.audioBufferSouceNode = source;
 
     console.log('bbb', source, window.audioBufferSouceNode);
 
