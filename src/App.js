@@ -44,7 +44,6 @@ function App() {
         playing={playing}
         videoPlaying={videoPlaying}
         audioSrc={config.track}
-        videoSrc={config.videoSrc}
         {...scopes}
       />
       <Background playing={playing} />

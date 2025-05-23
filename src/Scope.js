@@ -33,7 +33,6 @@ var intervalID;
 window.audioBufferSouceNode = null;
 var tickCounter = 0;
 
-var playing = false;
 var bloodHeight = 20;
 var bloodPower = 20;
 var bloodWidth = 20;
@@ -73,13 +72,6 @@ class Scope extends React.Component {
     this.video0 = React.createRef();
     this.canvas = React.createRef();
     this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    this.audioContext = null;
-    this.source = null; //the audio source
-    this.infoUpdateId = null; //to store the setTimeout ID and clear the interval
-    this.animationId = null;
-    this.status = 0; //flag for sound is playing 1 or stopped 0
-    this.forceStop = false;
 
     this.shaders = null;
     this.clock = null;
@@ -380,7 +372,6 @@ class Scope extends React.Component {
   }
 
   componentDidMount() {
-    // const canvas = document.getElementById('c');
     const canvas = this.canvas.current;
     var gl = glcontext.initialize(canvas, {
       context: {
@@ -471,9 +462,9 @@ class Scope extends React.Component {
     const draw = () => {
       // console.log('dm', playing, player.paused, kickValue);
 
-      // canvasCtx.canvas.width = WIDTH;
-      // canvasCtx.canvas.height = HEIGHT;
-      // canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
+      canvasCtx.canvas.width = WIDTH;
+      canvasCtx.canvas.height = HEIGHT;
+      canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
       requestAnimationFrame(draw);
 
@@ -512,8 +503,8 @@ class Scope extends React.Component {
       if (!player.paused) {
         // console.log('innn', bloodWidth, rect.width, rect.height);
         // bloodWidth = (rect.width / 2) - 300 + kickValue + bassValue;
-        bloodWidth = (WIDTH / 2) - 300 + kickValue + bassValue;
-        bloodHeight = (HEIGHT / 2) - 125 + 1.3 * midValue - highValue;
+        bloodWidth = (WIDTH) - 300 + kickValue + bassValue;
+        bloodHeight = (HEIGHT) - 125 + 1.3 * midValue - highValue;
         bloodPower = Math.max((bassValue / 11), 3);
         bloodCursor = bloodPower * 1.8 + 20;
         options.mouse_force = bloodPower;
