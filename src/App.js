@@ -1,9 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import set from 'lodash/set';
 
-import Scope from './Scope';
+import Visualizer from './Visualizer';
 import TextOverlay from './TextOverlay';
-import Background from './Background';
 
 import config from './config';
 
@@ -33,20 +32,19 @@ function App() {
     };
   }, [playFunction]);
 
-  const { artist, title, art, scopes, album } = config;
+  const { artist, title, art, Visualizers, album } = config;
 
   console.log('amama', config);
 
   return (
     <div className="App">
       <div id="blurOverlay" />
-      <Scope
+      <Visualizer
         playing={playing}
         videoPlaying={videoPlaying}
         audioSrc={config.track}
-        {...scopes}
+        {...Visualizers}
       />
-      <Background playing={playing} />
       <TextOverlay
         artist={artist}
         title={title}
@@ -57,5 +55,3 @@ function App() {
 }
 
 export default App;
-
-// export default function App2() { return null };

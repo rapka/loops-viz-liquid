@@ -1,48 +1,48 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import sum from 'lodash/sum';
+import get from 'lodash/get';
 
 import config from './config';
 
-import './Scope.css';
+import './Visualizer.css';
 
 
-var Loader = require('./js/src/engine/loader');
-var Clock = require('./js/src/engine/clock').Clock;
-var InputHandler = require('./js/src/engine/input').Handler;
-var debounce = require('./js/src/engine/utils').debounce;
-var ShaderManager = require('./js/src/engine/gl/shader').Manager;
-var geometry = require('./js/src/engine/gl/geometry');
-var FBO = require('./js/src/engine/gl/texture').FBO;
-var Mesh = require('./js/src/engine/gl/mesh').Mesh;
-var glcontext = require('./js/src/engine/gl/context');
-var vec2 = require('./js/src/gl-matrix').vec2;
-var ComputeKernel = require('./js/src/compute').Kernel;
+const Loader = require('./js/src/engine/loader');
+const Clock = require('./js/src/engine/clock').Clock;
+const InputHandler = require('./js/src/engine/input').Handler;
+const debounce = require('./js/src/engine/utils').debounce;
+const ShaderManager = require('./js/src/engine/gl/shader').Manager;
+const geometry = require('./js/src/engine/gl/geometry');
+const FBO = require('./js/src/engine/gl/texture').FBO;
+const Mesh = require('./js/src/engine/gl/mesh').Mesh;
+const glcontext = require('./js/src/engine/gl/context');
+const vec2 = require('./js/src/gl-matrix').vec2;
+const ComputeKernel = require('./js/src/compute').Kernel;
 
 
-let WIDTH = 1920;
-let HEIGHT = 1080;
+const CONFIG_WIDTH = get(config, 'canvas.width', 1920);
+const CONFIG_HEIGHT = get(config, 'canvas.height', 1080);
+const FIT_TO_WINDOW = get(config, 'canvas.fitToWindow', 1080);
 
-console.log('requiring');
 require('./js/src/game-shim');
-console.log('requiring done');
 
-var renderBlood = true;
+let renderBlood = true;
 
-var intervalID;
+let intervalID;
 window.audioBufferSouceNode = null;
-var tickCounter = 0;
+let tickCounter = 0;
 
-var bloodHeight = 20;
-var bloodPower = 20;
-var bloodWidth = 20;
-var bloodCursor = 80;
-var options = {
-  iterations: 18,
+let bloodHeight = 20;
+let bloodPower = 20;
+let bloodWidth = 20;
+let bloodCursor = 80;
+let options = {
+  iterations: get(config, 'canvas.iterations', 18),
   mouse_force: 10,
-  resolution: 0.5,
+  resolution: get(config, 'canvas.resolution', 0.5),
   cursor_size: 80,
-  step: 1/60
+  step: 1/60,
 };
 
 var mouseX = null;
@@ -65,28 +65,41 @@ var resetBlood = function () {
 }
 
 
-class Scope extends React.Component {
+class Visualizer extends React.Component {
   constructor(props) {
     super(props);
     this.player = React.createRef();
     this.video0 = React.createRef();
     this.canvas = React.createRef();
+    this.canvasCtx = null;
     this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    this.currentWidth = CONFIG_WIDTH;
+    this.currentHeight = CONFIG_HEIGHT;
+    this.state = {
+      resolution: {
+        width: CONFIG_WIDTH,
+        height: CONFIG_HEIGHT,
+      },
+    };
 
     this.shaders = null;
     this.clock = null;
   }
 
-  setup(width, height, singleComponentFboFormat) {
-    var canvas = this.canvas.current;
+  setup(fullWidth, fullHeight, singleComponentFboFormat) {
+    let canvas = this.canvas.current;
+    const width = fullWidth * options.resolution;
+    const height = fullHeight * options.resolution;
+    this.setState({ resolution: { width: fullWidth, height: fullHeight } })
 
-    console.log('ins setup', canvas, this.canvas);
     var gl = window.gl;
 
     canvas.width = width;
     canvas.height = height;
+    console.log('ins setup', canvas.width, canvas.height, this.canvas);
 
-    gl.viewport(0, 0, width, height);
+    gl.viewport(0, 0, canvas.width, canvas.height);
     gl.lineWidth(1.0);
 
     var px_x = 1.0/canvas.width;
@@ -384,6 +397,7 @@ class Scope extends React.Component {
       }
     });
     window.gl = gl;
+    this.canvasCtx = gl;
 
     this.clock = new Clock(canvas);
     var input = new InputHandler(canvas);
@@ -407,19 +421,32 @@ class Scope extends React.Component {
     var format = this.hasFloatLuminanceFBOSupport() ? gl.LUMINANCE : gl.RGBA;
 
     var onresize = () => {
-        // var rect = canvas.getBoundingClientRect(),
-        //   width = rect.width * options.resolution,
-        //   height = rect.height * options.resolution;
-        // console.log('mmmm', rect.width, rect.height);
         // if(rect.width != canvas.width || rect.height != canvas.height){
+
           input.updateOffset();
           window.clearInterval(intervalID);
           // this.setup(width, height, format);
-          this.setup(WIDTH, HEIGHT, format);
+
+          let width = CONFIG_WIDTH;
+          let height = CONFIG_HEIGHT;
+
+          if (FIT_TO_WINDOW) {
+            const rect = canvas.getBoundingClientRect();
+            // width = rect.width * options.resolution;
+            // height = rect.height * options.resolution;
+            width = window.innerWidth;
+            height = window.innerHeight;
+            console.log('mmmm', rect.width, rect.height);
+          }
+
+          this.setup(width, height, format);
         //}
       };
 
-      window.addEventListener('resize', debounce(onresize, 250));
+      if (FIT_TO_WINDOW) {
+        window.addEventListener('resize', debounce(onresize, 250));
+      }
+
       onresize();
 
       this.clock.start();
@@ -427,17 +454,13 @@ class Scope extends React.Component {
 
     const audioElement = this.player.current;
     let audioCtx = this.audioCtx;
-    const videoFilter = config.video.filter;
 
     var analyser = audioCtx.createAnalyser();
-
-    console.log('aaa', this.canvas.current, this.canvas.current.getContext('2d'), this.player.current);
-
     const videoCtx0 = document.getElementById('video0');
 
     let source = audioCtx.createMediaElementSource(audioElement);
 
-   window.audioBufferSouceNode = audioCtx.createBufferSource();
+    window.audioBufferSouceNode = audioCtx.createBufferSource();
 
     console.log('bbb', source, window.audioBufferSouceNode);
 
@@ -462,9 +485,9 @@ class Scope extends React.Component {
     const draw = () => {
       // console.log('dm', playing, player.paused, kickValue);
 
-      canvasCtx.canvas.width = WIDTH;
-      canvasCtx.canvas.height = HEIGHT;
-      canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
+      // canvasCtx.canvas.width = this.state.reso;
+      // canvasCtx.canvas.height = HEIGHT;
+      // this.canvasCtx.clearRect(0, 0, this.state.resolution.width, this.state.resolution.height);
 
       requestAnimationFrame(draw);
 
@@ -497,14 +520,13 @@ class Scope extends React.Component {
       let blurValue = bassValue * bassValue * 0.00001 * 0.25;
       // blurValue = Math.min(bassValue, 5);
       blurValue = bassValue / 256;
-      let filterString = `${videoFilter} blur(${blurValue}px)`;
 
       // var rect = this.canvas.current.getBoundingClientRect();
       if (!player.paused) {
         // console.log('innn', bloodWidth, rect.width, rect.height);
         // bloodWidth = (rect.width / 2) - 300 + kickValue + bassValue;
-        bloodWidth = (WIDTH) - 300 + kickValue + bassValue;
-        bloodHeight = (HEIGHT) - 125 + 1.3 * midValue - highValue;
+        bloodWidth = (this.state.resolution.width * options.resolution) - 300 + kickValue + bassValue;
+        bloodHeight = (this.state.resolution.height * options.resolution) - 125 + 1.3 * midValue - highValue;
         bloodPower = Math.max((bassValue / 11), 3);
         bloodCursor = bloodPower * 1.8 + 20;
         options.mouse_force = bloodPower;
@@ -520,7 +542,17 @@ class Scope extends React.Component {
   render() {
     return (
       <div className="viz">
-        <div id="cc"><canvas ref={this.canvas} id="canvas" width={WIDTH} height={HEIGHT} /></div>
+        <div id="cc">
+          <canvas
+            ref={this.canvas}
+            id="canvas"
+            width={this.state.resolution.width}
+            height={this.state.resolution.height}
+            style={{
+              width: `${this.state.resolution.width}px`,
+              height: `${this.state.resolution.height}px`,
+            }} />
+        </div>
         <audio
           ref={this.player}
           src={this.props.audioSrc}
@@ -528,19 +560,19 @@ class Scope extends React.Component {
           preload="auto"
           id="audioPlayer"
         />
-        <div id="cover-container" className="label-logo"><img className="logo-image" src="img/logo.png" /></div>
+        <div id="cover-container" className="label-logo"><img className="logo-image" src="img/logo-wb.png" /></div>
       </div>
     );
   }
 }
 
-Scope.propTypes = {
-  rotationOffset: PropTypes.number, // hue offset between different scopes (in degrees)
+Visualizer.propTypes = {
+  rotationOffset: PropTypes.number, // hue offset between different Visualizers (in degrees)
   audioSrc: PropTypes.string.isRequired,
 };
 
-Scope.defaultProps = {
+Visualizer.defaultProps = {
   rotationOffset: 0,
 }
 
-export default Scope;
+export default Visualizer;

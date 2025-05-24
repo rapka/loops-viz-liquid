@@ -2,9 +2,6 @@
   position: fixed;
   top: 0;
   left: 0;
-  /*height: 1080px;*/
-  /*width: 1920px;*/
-  z-index: 100;
 }
 
 .viz {
@@ -12,6 +9,9 @@
   width: 100%;
   position: absolute;
   z-index: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #cover-container {
@@ -24,4 +24,5 @@
   flex-shrink: 0;
   justify-self: center;
   align-self: center;
+  mix-blend-mode: color-dodge;
 }

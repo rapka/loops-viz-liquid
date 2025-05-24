@@ -2,37 +2,25 @@
 	"artist": "",
 	"title": "",
 	"album": "",
-	"track": "tracks/knees.mp3",
-	"videoSrc": "baronesshq.mp4",
+	"track": "tracks/abolition.wav",
 	"textColor": "#FFFFFF",
 	"filmGrain": true,
 	"bpm": 150,
-	"video": {
-		"src": "baronesshq.mp4",
-		"filter": "hue-rotate(180deg)"
-	},
 	"filmGrain": {
 		"opacity": 0.3,
 		"scale": 1
-	},
-	"scopes": {
-		"count": 3,
-		"rotateColors": false,
-		"rotationOffset": 180,
-		"colors": ["#FFFFFF", "#FFFFFF", "#888888"]
 	},
 	"background": {
 		"color": "#000000",
 		"image": "",
 		"css": "",
 		"directory": "elephant",
-
 		"numImages": 100
 	},
-	"art": {
-		"rotationDuration": 66,
-		"backwards": false,
-		"file": "",
-		"blendMode": "normal"
+	"canvas": {
+		"width": 1920,
+		"height": 1080,
+		"fitToWindow": true,
+		"iterations": 18
 	}
 }

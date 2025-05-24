@@ -25,10 +25,6 @@ The app is configured via `src/config.json`. It follows the following format:
 	"title": "",
 	"track": "song.wav",
 	"textColor": "#FFFFFF",
-	"scopes": {
-		"rotationOffset": 0,
-		"colors": ["#FFFFFF", "#FFFFFF", "#888888"]
-	},
 	"background": {
 		"color": "#000000",
 		"image": "background.jpg",
