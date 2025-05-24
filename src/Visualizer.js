@@ -20,7 +20,6 @@ const glcontext = require('./js/src/engine/gl/context');
 const vec2 = require('./js/src/gl-matrix').vec2;
 const ComputeKernel = require('./js/src/compute').Kernel;
 
-
 const CONFIG_WIDTH = get(config, 'canvas.width', 1920);
 const CONFIG_HEIGHT = get(config, 'canvas.height', 1080);
 const FIT_TO_WINDOW = get(config, 'canvas.fitToWindow', 1080);
@@ -45,9 +44,8 @@ let options = {
   step: 1/60,
 };
 
-var mouseX = null;
-var mouseY = null;
-
+let mouseX = null;
+let mouseY = null;
 
 function onMouseUpdate(e) {
   mouseX = e.pageX;
@@ -97,7 +95,6 @@ class Visualizer extends React.Component {
 
     canvas.width = width;
     canvas.height = height;
-    console.log('ins setup', canvas.width, canvas.height, this.canvas);
 
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.lineWidth(1.0);
@@ -286,7 +283,6 @@ class Visualizer extends React.Component {
         output: null
       });
 
-    // var rect = canvas.getBoundingClientRect();
     var x0 = bloodWidth;
     var y0 = bloodHeight;
 
@@ -462,9 +458,6 @@ class Visualizer extends React.Component {
 
     window.audioBufferSouceNode = audioCtx.createBufferSource();
 
-    console.log('bbb', source, window.audioBufferSouceNode);
-
-
     source.connect(analyser);
     analyser.connect(audioCtx.destination);
 
@@ -475,7 +468,6 @@ class Visualizer extends React.Component {
     var dataArray = new Uint8Array(bufferLength);
     const bassArray = new Uint8Array(bufferLength);
 
-    // canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
     const bgElem = document.getElementById('bg');
     const overlayElem = document.getElementById('text-overlay');
     const coverElem = document.getElementById('cover-container');
@@ -483,12 +475,6 @@ class Visualizer extends React.Component {
     const playing = this.props.playing;
     const player = this.player.current;
     const draw = () => {
-      // console.log('dm', playing, player.paused, kickValue);
-
-      // canvasCtx.canvas.width = this.state.reso;
-      // canvasCtx.canvas.height = HEIGHT;
-      // this.canvasCtx.clearRect(0, 0, this.state.resolution.width, this.state.resolution.height);
-
       requestAnimationFrame(draw);
 
       analyser.getByteTimeDomainData(dataArray);
@@ -520,6 +506,8 @@ class Visualizer extends React.Component {
       let blurValue = bassValue * bassValue * 0.00001 * 0.25;
       // blurValue = Math.min(bassValue, 5);
       blurValue = bassValue / 256;
+
+      coverElem.filer = `blur(${blurValue}px)`;
 
       // var rect = this.canvas.current.getBoundingClientRect();
       if (!player.paused) {
@@ -567,12 +555,12 @@ class Visualizer extends React.Component {
 }
 
 Visualizer.propTypes = {
-  rotationOffset: PropTypes.number, // hue offset between different Visualizers (in degrees)
   audioSrc: PropTypes.string.isRequired,
+  playing: PropTypes.bool,
 };
 
 Visualizer.defaultProps = {
-  rotationOffset: 0,
-}
+  playing: false,
+};
 
 export default Visualizer;
