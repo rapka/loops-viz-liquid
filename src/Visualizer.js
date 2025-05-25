@@ -28,7 +28,6 @@ require('./js/src/game-shim');
 
 let renderBlood = true;
 
-let intervalID;
 window.audioBufferSouceNode = null;
 let tickCounter = 0;
 
@@ -219,9 +218,8 @@ class Visualizer extends React.Component {
       }),
       jacobiKernel = new ComputeKernel(gl, {
         shader: this.shaders.get('kernel', 'jacobi'),
-        // use all so the simulation still works
-        // even if the pressure boundary is not
-        // properly enforced
+        // use all so the simulation still works even if the
+        // pressure boundary is not properly enforced
         mesh: all,
         nounbind: true,
         uniforms: {
@@ -417,26 +415,19 @@ class Visualizer extends React.Component {
     var format = this.hasFloatLuminanceFBOSupport() ? gl.LUMINANCE : gl.RGBA;
 
     var onresize = () => {
-        // if(rect.width != canvas.width || rect.height != canvas.height){
-
           input.updateOffset();
-          window.clearInterval(intervalID);
-          // this.setup(width, height, format);
 
           let width = CONFIG_WIDTH;
           let height = CONFIG_HEIGHT;
 
           if (FIT_TO_WINDOW) {
-            const rect = canvas.getBoundingClientRect();
-            // width = rect.width * options.resolution;
-            // height = rect.height * options.resolution;
             width = window.innerWidth;
             height = window.innerHeight;
-            console.log('mmmm', rect.width, rect.height);
           }
 
-          this.setup(width, height, format);
-        //}
+          if (width !== this.state.resolution.width && height !== this.state.resolution.height) {
+           this.setup(width, height, format);
+          }
       };
 
       if (FIT_TO_WINDOW) {
@@ -444,7 +435,6 @@ class Visualizer extends React.Component {
       }
 
       onresize();
-
       this.clock.start();
     });
 
