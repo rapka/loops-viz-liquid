@@ -1,7 +1,3 @@
-// if (typeof define !== 'function') { var define = require('amdefine')(module);}
-
-// define(function(require, exports, module){
-
 var Loader = require('./loader'),
     Clock = require('./clock'),
     context = require('./renderer/gl/context'),
@@ -58,4 +54,3 @@ exports.Application.prototype = {
         alert(message);
     },
 };
-// });

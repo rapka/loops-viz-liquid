@@ -1,7 +1,3 @@
-// if (typeof define !== 'function') { var define = require('amdefine')(module);}
-
-// define(function(require, exports, module){
-
 var mesh = require('./mesh'),
     texture = require('./texture'),
     extend = require('../utils').extend,
@@ -117,5 +113,3 @@ exports.initialize = function (canvas, options, onerror) {
 
     return gl;
 };
-
-// });

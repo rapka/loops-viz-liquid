@@ -1,7 +1,3 @@
-// if (typeof define !== 'function') { var define = require('amdefine')(module);}
-
-// define(function(require, exports, module){
-    
 var scene = exports,
     mesh = require('gl/mesh'),
     glUtils = require('gl/utils'),
@@ -352,5 +348,3 @@ scene.SimpleMesh.prototype = {
         this.vbo.draw(this.mode);
     }
 };
-
-// });

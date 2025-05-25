@@ -1,7 +1,3 @@
-// if (typeof define !== 'function') { var define = require('amdefine')(module);}
-
-// define(function(require, exports, module){
-
 function keys(o){
     var a = [];
     for(var name in o){
@@ -174,5 +170,3 @@ exports.Manager.prototype = {
         return this.shaders[key];
     }
 };
-
-// });

@@ -1,7 +1,3 @@
-// if (typeof define !== 'function') { var define = require('amdefine')(module);}
-
-// define(function(require, exports, module){
-
 function noop(){}
 function compileChild(c){
     return c.compile();
@@ -49,5 +45,3 @@ exports.Node.prototype = {
     }
 
 };
-
-// });

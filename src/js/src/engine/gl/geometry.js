@@ -1,7 +1,3 @@
-// if (typeof define !== 'function') { var define = require('amdefine')(module);}
-
-// define(function(require, exports, module){
-    
 exports.grid = function(size){
     var buffer = new Float32Array(size*size*6*3),
         i = 0,
@@ -125,5 +121,3 @@ exports.cube = function cube(scale) {
             scale, -scale, -scale
         ]);
 };
-
-// });

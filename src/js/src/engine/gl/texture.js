@@ -1,7 +1,3 @@
-// if (typeof define !== 'function') { var define = require('amdefine')(module);}
-
-// define(function(require, exports, module){
-    
 var extend = require('../utils').extend;
 
 exports.Texture2D = function Texture2D(gl, data, options) {
@@ -91,7 +87,3 @@ exports.FBO.prototype = extend({}, exports.Texture2D.prototype, {
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
     }
 });
-
-
-
-// });

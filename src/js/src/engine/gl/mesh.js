@@ -1,7 +1,3 @@
-// if (typeof define !== 'function') { var define = require('amdefine')(module);}
-
-// define(function(require, exports, module){
-
 /*
  * Example:
 new exports.Mesh({
@@ -114,5 +110,3 @@ Buffer.prototype = {
     }
 };
 exports.Buffer = Buffer;
-   
-// });

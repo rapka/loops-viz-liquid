@@ -1,6 +1,3 @@
-// if (typeof define !== 'function') { var define = require('amdefine')(module);}
-
-// define(function(require, exports, module){
 var camera = require('./camera');
 
 exports.Root = function() {
@@ -9,5 +6,3 @@ exports.Root = function() {
 }; 
 exports.Root.prototype = {
 };
-
-// });
