@@ -58,6 +58,7 @@ function App() {
         artist={artist}
         title={title}
         album={album}
+        playing={playing}
       />
     </div>
   );

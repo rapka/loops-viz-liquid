@@ -11,7 +11,7 @@ const TextOverlay = (props) => {
   return (
     <div className="text-container" id="text-overlay" >
       <span
-         className="text-ring title"
+         className={`text-ring title${props.playing ? ' playing' : ''}`}
          id="title"
          style={{
            '--total': splitTitle.length,
@@ -30,10 +30,12 @@ const TextOverlay = (props) => {
 
 TextOverlay.propTypes = {
   title: PropTypes.string,
+  playing: PropTypes.bool,
 };
 
 TextOverlay.defaultProps = {
   title: '',
+  playing: false,
 }
 
 export default TextOverlay;

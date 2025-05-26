@@ -22,17 +22,6 @@
 /*  mix-blend-mode: overlay;*/
 }
 
-
-@keyframes slideHoriz {
-  0% {
-    transform: translateX(3840px);
-  }
-
-  100% {
-    transform: translateX(-3840px);
-  }
-}
-
 .text-ring {
   position: relative;
 }
@@ -70,6 +59,9 @@
 @media (prefers-reduced-motion: no-preference) {
   .text-ring {
     animation: spin 180s infinite linear;
+  }
+  .playing {
+    animation-duration: 0s;
   }
   @keyframes spin {
     to {
