@@ -6,7 +6,7 @@ uniform float visualizerMode;
 uniform bool color;
 
 void main(){
-    vec4 transPink = vec4(0.96, 0.66, 0.72, 1.0);
+    vec4 transPink = vec4(0.96, 0.65, 0.71, 1.0);
     vec4 transBlue = vec4(0.35, 0.80, 0.98, 1.0);
     vec4 transWhite = vec4(1.0, 1.0, 1.0, 1.0);
     float vel_x = texture2D(velocity, uv).x;

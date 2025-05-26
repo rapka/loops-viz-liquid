@@ -35,9 +35,18 @@ function App() {
   const { artist, title, art, Visualizers, album } = config;
 
   console.log('amama', config);
+  const style = {
+    width: `${config.canvas.width}px`,
+    height: `${config.canvas.height}px`,
+  };
+
+  if (config.canvas.fitToWindow) {
+    style.width = '100%';
+    style.height = '100%';
+  }
 
   return (
-    <div className="App">
+    <div className="App" style={style}>
       <div id="blurOverlay" />
       <Visualizer
         playing={playing}

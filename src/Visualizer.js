@@ -425,9 +425,11 @@ class Visualizer extends React.Component {
             height = window.innerHeight;
           }
 
-          if (width !== this.state.resolution.width && height !== this.state.resolution.height) {
+          console.log('newww', width, this.state.resolution.width, height, this.state.resolution.height);
+
+          // if (width !== this.state.resolution.width || height !== this.state.resolution.height) {
            this.setup(width, height, format);
-          }
+          // }
       };
 
       if (FIT_TO_WINDOW) {
@@ -459,8 +461,8 @@ class Visualizer extends React.Component {
     const bassArray = new Uint8Array(bufferLength);
 
     const bgElem = document.getElementById('bg');
-    const overlayElem = document.getElementById('text-overlay');
-    const coverElem = document.getElementById('cover-container');
+    // const overlayElem = document.getElementById('text-overlay');
+    const coverElem = document.getElementById('logo-container');
 
     const playing = this.props.playing;
     const player = this.player.current;
@@ -497,7 +499,7 @@ class Visualizer extends React.Component {
       // blurValue = Math.min(bassValue, 5);
       blurValue = bassValue / 256;
 
-      coverElem.filer = `blur(${blurValue}px)`;
+      coverElem.filter = `blur(${blurValue}px)`;
 
       // var rect = this.canvas.current.getBoundingClientRect();
       if (!player.paused) {
@@ -538,7 +540,7 @@ class Visualizer extends React.Component {
           preload="auto"
           id="audioPlayer"
         />
-        <div id="cover-container" className="label-logo"><img className="logo-image" src="img/logo-wb.png" /></div>
+        <div id="logo-container" className="logo-container"><img className="logo-image" src="img/logo-wb.png" /></div>
       </div>
     );
   }

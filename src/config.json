@@ -1,7 +1,5 @@
 {
-	"artist": "",
-	"title": "",
-	"album": "",
+	"title": "Abolition Version",
 	"track": "tracks/abolition.wav",
 	"textColor": "#FFFFFF",
 	"filmGrain": true,
@@ -20,7 +18,7 @@
 	"canvas": {
 		"width": 1920,
 		"height": 1080,
-		"fitToWindow": true,
+		"fitToWindow": false,
 		"iterations": 18
 	}
 }
