@@ -24,6 +24,7 @@ const ComputeKernel = require('./js/src/compute').Kernel;
 const CONFIG_WIDTH = get(config, 'canvas.width', 1920);
 const CONFIG_HEIGHT = get(config, 'canvas.height', 1080);
 const FIT_TO_WINDOW = get(config, 'canvas.fitToWindow', 1080);
+const ENABLE_MOUSE = get(config, 'canvas.enableMouse', false);
 
 require('./js/src/game-shim');
 
@@ -31,17 +32,19 @@ let renderBlood = true;
 
 window.audioBufferSouceNode = null;
 let tickCounter = 0;
-
-let bloodHeight = 20;
-let bloodPower = 20;
-let bloodWidth = 20;
+let bloodPower = 0.1;
 let options = {
   iterations: get(config, 'canvas.iterations', 18),
-  mouse_force: 10,
+  mouse_force: 0.1,
   resolution: get(config, 'canvas.resolution', 0.5),
-  cursor_size: 80,
+  cursor_size: 60,
   step: 1/60,
 };
+
+// let bloodWidth = CONFIG_WIDTH / 2;
+// let bloodHeight = CONFIG_HEIGHT / 2;
+let bloodWidth = 0;
+let bloodHeight = 0;
 
 let mouseX = null;
 let mouseY = null;
@@ -51,13 +54,15 @@ function onMouseUpdate(e) {
   mouseY = e.pageY;
 }
 
-document.addEventListener('mousemove', onMouseUpdate, false);
-document.addEventListener('mouseenter', onMouseUpdate, false);
+if (ENABLE_MOUSE) {
+  document.addEventListener('mousemove', onMouseUpdate, false);
+  document.addEventListener('mouseenter', onMouseUpdate, false);
+}
 
 var resetBlood = function () {
-  bloodHeight = 50;
-  bloodWidth = 50;
-  bloodPower = 10;
+  bloodWidth = CONFIG_WIDTH / 2;
+  bloodHeight = CONFIG_HEIGHT / 2;
+  bloodPower = 0.1;
 }
 
 
@@ -302,7 +307,7 @@ class Visualizer extends React.Component {
         bloodPower = 50;
         // bloodWidth = (rect.width / 2) + (Math.random()*1000 - 500);
         // bloodHeight = (rect.height / 2) + (Math.random()*600 - 300);
-        if (player.paused) {
+        if (player.paused && ENABLE_MOUSE) {
           bloodWidth = mouseX;
           bloodHeight = mouseY;
         }
@@ -497,8 +502,11 @@ class Visualizer extends React.Component {
       blurValue = bassValue * 3 / 256;
 
       if(coverElem && coverElem.style) {
-       // coverElem.style.filter = `blur(${blurValue}px)`;
-       // coverElem.style.transform = `translateY(${midValue * .25}px) scale(${1.0 + blurValue * 0.02})`;
+        // coverElem.style.filter = `blur(${blurValue}px)`;
+        // coverElem.style.transform = `translateY(${midValue * .25}px) scale(${1.0 + blurValue * 0.02})`;
+
+        // this.canvas.current.style.transform = `translateY(${midValue * .25}px) scale(${1.0 + blurValue * 0.04})`;
+        // this.canvas.current.style.filter = `blur(${blurValue}px)`;
       }
 
       // var rect = this.canvas.current.getBoundingClientRect();
