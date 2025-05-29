@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import sum from 'lodash/sum';
 import get from 'lodash/get';
+import TextOverlay from './TextOverlay';
 
 import config from './config';
 
@@ -34,7 +35,6 @@ let tickCounter = 0;
 let bloodHeight = 20;
 let bloodPower = 20;
 let bloodWidth = 20;
-let bloodCursor = 80;
 let options = {
   iterations: get(config, 'canvas.iterations', 18),
   mouse_force: 10,
@@ -58,7 +58,6 @@ var resetBlood = function () {
   bloodHeight = 50;
   bloodWidth = 50;
   bloodPower = 10;
-  bloodCursor = 120;
 }
 
 
@@ -331,8 +330,8 @@ class Visualizer extends React.Component {
         y0 = y1;
         if(x0 === 0 && y0 === 0) xd = yd = 0;
 
-        vec2.set([xd*px_x*bloodCursor*bloodPower,
-             -yd*px_y*bloodCursor*bloodPower], addForceKernel.uniforms.force);
+        vec2.set([xd*px_x*bloodPower,
+             -yd*px_y*bloodPower], addForceKernel.uniforms.force);
         vec2.set([x0*px_x*2-1.0, (y0*px_y*2-1.0)*-1], addForceKernel.uniforms.center);
       }
 
@@ -427,9 +426,7 @@ class Visualizer extends React.Component {
 
           console.log('newww', width, this.state.resolution.width, height, this.state.resolution.height);
 
-          // if (width !== this.state.resolution.width || height !== this.state.resolution.height) {
-           this.setup(width, height, format);
-          // }
+          this.setup(width, height, format);
       };
 
       if (FIT_TO_WINDOW) {
@@ -495,21 +492,33 @@ class Visualizer extends React.Component {
       // overlayElem.style.transform = `translateY(${midValue * .15}px)`;
 
       let greyscale = Math.max(50 - midValue * 4, 0);
-      let blurValue = bassValue * bassValue * 0.00001 * 0.25;
+      let blurValue = bassValue * bassValue * 0.00001;
       // blurValue = Math.min(bassValue, 5);
-      blurValue = bassValue / 256;
+      blurValue = bassValue * 3 / 256;
 
-      coverElem.filter = `blur(${blurValue}px)`;
+      if(coverElem && coverElem.style) {
+       // coverElem.style.filter = `blur(${blurValue}px)`;
+       // coverElem.style.transform = `translateY(${midValue * .25}px) scale(${1.0 + blurValue * 0.02})`;
+      }
 
       // var rect = this.canvas.current.getBoundingClientRect();
+
+      const MAX_OFFSET = 300;
       if (!player.paused) {
         // console.log('innn', bloodWidth, rect.width, rect.height);
         // bloodWidth = (rect.width / 2) - 300 + kickValue + bassValue;
-        bloodWidth = (this.state.resolution.width * options.resolution) - 300 + kickValue + bassValue;
-        bloodHeight = (this.state.resolution.height * options.resolution) - 125 + 1.3 * midValue - highValue;
-        bloodPower = Math.max((bassValue / 11), 3);
-        bloodCursor = bloodPower * 1.8 + 20;
+        bloodWidth = (this.state.resolution.width * options.resolution) - MAX_OFFSET + kickValue + bassValue;
+        bloodWidth = Math.max(bloodWidth, (this.state.resolution.width * options.resolution) - MAX_OFFSET);
+        bloodWidth = Math.min(bloodWidth, (this.state.resolution.width * options.resolution) + MAX_OFFSET);
+
+        bloodHeight = (this.state.resolution.height * options.resolution) - MAX_OFFSET + 25 + (1.3 * (midValue + highValue));
+        bloodHeight = Math.max(bloodHeight, (this.state.resolution.height * options.resolution) - MAX_OFFSET);
+        bloodHeight = Math.min(bloodHeight, (this.state.resolution.height * options.resolution) + MAX_OFFSET);
+        bloodPower = Math.max((bassValue / 20), 3);
         options.mouse_force = bloodPower;
+
+        console.log('bbb', bloodWidth);
+
       }
 
       // console.log('greyscale', greyscale, midValue, highValue);
@@ -520,9 +529,22 @@ class Visualizer extends React.Component {
   }
 
   render() {
+    const style = {
+      width: `${config.canvas.width}px`,
+      height: `${config.canvas.height}px`,
+    };
+
+    if (config.canvas.fitToWindow) {
+      style.width = '100%';
+      style.height = '100%';
+    }
+
+    const splitTitle = this.props.title.split('');
+    const innerAngle = 360 / splitTitle.length;
+
+
     return (
-      <div className="viz">
-        <div id="cc">
+      <div className="viz" style={style}>
           <canvas
             ref={this.canvas}
             id="canvas"
@@ -532,13 +554,16 @@ class Visualizer extends React.Component {
               width: `${this.state.resolution.width}px`,
               height: `${this.state.resolution.height}px`,
             }} />
-        </div>
         <audio
           ref={this.player}
           src={this.props.audioSrc}
           type="audio/mpeg"
           preload="auto"
           id="audioPlayer"
+        />
+        <TextOverlay
+          title={this.props.title}
+          playing={this.props.playing}
         />
         <div id="logo-container" className="logo-container"><img className="logo-image" src="img/logo-wb.png" /></div>
       </div>
@@ -549,10 +574,12 @@ class Visualizer extends React.Component {
 Visualizer.propTypes = {
   audioSrc: PropTypes.string.isRequired,
   playing: PropTypes.bool,
+  title: PropTypes.string,
 };
 
 Visualizer.defaultProps = {
   playing: false,
+  title: '',
 };
 
 export default Visualizer;
