@@ -1,17 +1,10 @@
 {
-	"title": "Abolition Version",
-	"track": "tracks/abolition.wav",
+	"title": "t4t dub",
+	"track": "tracks/06 T4T Dub.wav",
 	"textColor": "#FFFFFF",
 	"bpm": 150,
-	"background": {
-		"color": "#000000",
-		"image": "",
-		"css": "",
-		"directory": "elephant",
-		"numImages": 100
-	},
 	"canvas": {
-		"width": 1920,
+		"width": 1080,
 		"height": 1080,
 		"fitToWindow": false,
 		"iterations": 18
