@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect } from 'react';
 import set from 'lodash/set';
 
 import Visualizer from './Visualizer';
-import TextOverlay from './TextOverlay';
 
 import config from './config';
 
@@ -34,31 +33,15 @@ function App() {
 
   const { artist, title, art, Visualizers, album } = config;
 
-  console.log('amama', config);
-  const style = {
-    width: `${config.canvas.width}px`,
-    height: `${config.canvas.height}px`,
-  };
-
-  if (config.canvas.fitToWindow) {
-    style.width = '100%';
-    style.height = '100%';
-  }
-
   return (
-    <div className="App" style={style}>
+    <div className="App">
       <div id="blurOverlay" />
       <Visualizer
         playing={playing}
         videoPlaying={videoPlaying}
         audioSrc={config.track}
-        {...Visualizers}
-      />
-      <TextOverlay
-        artist={artist}
         title={title}
-        album={album}
-        playing={playing}
+        {...Visualizers}
       />
     </div>
   );
