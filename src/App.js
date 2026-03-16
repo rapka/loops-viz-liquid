@@ -39,7 +39,7 @@ function App() {
       <Visualizer
         playing={playing}
         videoPlaying={videoPlaying}
-        audioSrc={config.track}
+        audioSrc={`tracks/${config.track}`}
         title={title}
         {...Visualizers}
       />

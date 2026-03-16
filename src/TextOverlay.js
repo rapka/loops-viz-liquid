@@ -5,7 +5,7 @@ import config from './config';
 import './TextOverlay.css';
 
 const TextOverlay = (props) => {
-  const splitTitle = props.title.split('');
+  const splitTitle = `${props.title} `.split('');
   const innerAngle = 360 / splitTitle.length;
 
   return (
