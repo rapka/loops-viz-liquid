@@ -1,10 +1,5 @@
 const $ = require('jquery');
 
-console.log('requiring');
-require('./game-shim');
-// only when optimized
-console.log('requiring done');
-
 var desktop = true;
 var renderBlood = true;
 

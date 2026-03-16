@@ -26,8 +26,6 @@ const CONFIG_HEIGHT = get(config, 'canvas.height', 1080);
 const FIT_TO_WINDOW = get(config, 'canvas.fitToWindow', 1080);
 const ENABLE_MOUSE = get(config, 'canvas.enableMouse', false);
 
-require('./js/src/game-shim');
-
 let renderBlood = true;
 
 window.audioBufferSouceNode = null;
