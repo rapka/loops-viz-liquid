@@ -463,7 +463,7 @@ class Visualizer extends React.Component {
     const bassArray = new Uint8Array(bufferLength);
 
     const bgElem = document.getElementById('bg');
-    // const overlayElem = document.getElementById('text-overlay');
+    const overlayElem = document.getElementById('text-overlay');
     const coverElem = document.getElementById('logo-container');
 
     const playing = this.props.playing;
@@ -494,16 +494,23 @@ class Visualizer extends React.Component {
 
       // bgElem.style.filter = `blur(${bassValue * 0.004}px)`;
       // overlayElem.style.filter = `blur(${bassValue * 0.002}px)`;
+
       // overlayElem.style.transform = `translateY(${midValue * .15}px)`;
 
       let greyscale = Math.max(50 - midValue * 4, 0);
       let blurValue = bassValue * bassValue * 0.00001;
       // blurValue = Math.min(bassValue, 5);
-      blurValue = bassValue * 3 / 256;
+      blurValue = bassValue * 2 / 256;
+      const scaleValue = 1.0 + blurValue * 0.003;
+      blurValue = blurValue * (blurValue * 1.1);
 
       if(coverElem && coverElem.style) {
-        // coverElem.style.filter = `blur(${blurValue}px)`;
-        // coverElem.style.transform = `translateY(${midValue * .25}px) scale(${1.0 + blurValue * 0.02})`;
+        coverElem.style.filter = `blur(${blurValue}px)`;
+        // coverElem.style.transform = `translateY(${midValue * .25}px) scale(${scaleValue})`;
+        coverElem.style.transform = `scale(${scaleValue})`;
+        overlayElem.style.filter = `blur(${blurValue}px)`;
+        // overlayElem.style.transform = `translateY(${midValue * .25}px) scale(${scaleValue})`;
+        overlayElem.style.transform = `scale(${scaleValue})`;
 
         // this.canvas.current.style.transform = `translateY(${midValue * .25}px) scale(${1.0 + blurValue * 0.04})`;
         // this.canvas.current.style.filter = `blur(${blurValue}px)`;
@@ -569,12 +576,14 @@ class Visualizer extends React.Component {
           preload="auto"
           id="audioPlayer"
         />
-        <TextOverlay
-          title={this.props.title}
-          playing={this.props.playing}
-        />
-        <div id="logo-container" className="logo-container"><img className="logo-image" src="img/logo-wb.png" /></div>
-      </div>
+        <div id="text-logo-container">
+          <TextOverlay
+            title={this.props.title}
+            playing={this.props.playing}
+          />
+          <div id="logo-container" className="logo-container"><img className="logo-image" src="img/logo-wb.png" /></div>
+        </div>
+      </div>  
     );
   }
 }
