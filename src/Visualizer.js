@@ -500,7 +500,6 @@ class Visualizer extends React.Component {
       // blurValue = Math.min(bassValue, 5);
       blurValue = bassValue * 2 / 256;
       const scaleValue = 1.0 + blurValue * 0.003;
-      blurValue = blurValue * (blurValue * 1.1);
 
       if(coverElem && coverElem.style) {
         coverElem.style.filter = `blur(${blurValue}px)`;

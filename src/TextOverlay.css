@@ -30,22 +30,15 @@
 }
 
 .text-ring {
-  --character-width: 3.5; /* In "ch" units */
+  --character-width: calc(52 / var(--total)); /* In "ch" units */
 
 }
 
-/*.text-ring [style*=--index] {
-  transform:
-    translate(-50%, -50%)
-    rotate(calc(var(--inner-angle) * var(--index)))
-    translateY(var(--radius, -5ch));
-}
-*/
 .text-ring [style*=--index] {
   /* In "ch" units */
   --inner-angle: calc((360 / var(--total)) * 1deg);
   --radius: calc((var(--character-width, 1) / sin(var(--inner-angle))) * -1ch);
-  --font-size: 10;
+  --font-size: 8;
   /*font-family: monospace;*/
   text-transform: uppercase;
   font-size: calc(var(--font-size, 2) * 1rem);
@@ -72,4 +65,3 @@
     }
   }
 }
-
